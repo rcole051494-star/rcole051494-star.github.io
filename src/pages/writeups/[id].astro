@@ -1,0 +1,59 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const caseFiles = await getCollection('case-files');
+  return caseFiles.map(entry => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<Layout title={`${entry.data.title} - Case File ${entry.data.id}`}>
+  <article class="max-w-3xl py-12 mx-auto">
+    <a href="/#L7" class="font-mono text-xs uppercase tracking-widest text-[var(--ink)]/50 hover:text-[var(--signal)] flex items-center gap-2 mb-12 w-max">
+      ← Back to payload
+    </a>
+    
+    <header class="mb-12 border-b border-[var(--rule)] pb-12">
+      <div class="font-mono text-[10px] bg-[var(--ink)] text-[var(--paper)] inline-block px-2 py-1 mb-6">
+        {entry.data.id}
+      </div>
+      <h1 class="font-display text-5xl md:text-6xl mb-6 leading-tight">{entry.data.title}</h1>
+      <p class="text-xl text-[var(--ink)]/70">{entry.data.summary}</p>
+      
+      <div class="flex flex-wrap gap-8 mt-8 font-mono text-xs">
+        <div class="flex flex-col gap-1">
+          <span class="text-[var(--ink)]/40 uppercase">Environment</span>
+          <span>{entry.data.environment}</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-[var(--ink)]/40 uppercase">Duration</span>
+          <span>{entry.data.duration_hours} Hours</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-[var(--ink)]/40 uppercase">Difficulty</span>
+          <span class="capitalize text-[var(--signal)]">{entry.data.difficulty}</span>
+        </div>
+      </div>
+      
+      <div class="flex flex-wrap gap-2 mt-8">
+        {entry.data.attack_techniques.map((t: string) => (
+          <span class="font-mono text-[9px] border border-[var(--rule)] px-2 py-1 bg-[var(--ink)]/5">{t}</span>
+        ))}
+        {entry.data.tools.map((t: string) => (
+          <span class="font-mono text-[9px] border border-[var(--rule)] px-2 py-1 bg-[var(--signal)]/10 text-[var(--signal)]">{t}</span>
+        ))}
+      </div>
+    </header>
+
+    <!-- Content rendered via Markdown -->
+    <div class="case-file-content">
+      <Content />
+    </div>
+  </article>
+</Layout>

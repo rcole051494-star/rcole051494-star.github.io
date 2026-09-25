@@ -1,0 +1,75 @@
+---
+// src/components/AmbientBackground.astro
+---
+<canvas id="topo-canvas" class="fixed inset-0 w-full h-full pointer-events-none -z-10 opacity-50" aria-hidden="true"></canvas>
+
+<script>
+  const canvas = document.getElementById('topo-canvas') as HTMLCanvasElement;
+  
+  if (canvas && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    
+    let mouse = { x: width/2, y: height/2 };
+    let targetMouse = { x: width/2, y: height/2 };
+
+    window.addEventListener('mousemove', (e) => {
+      targetMouse.x = e.clientX;
+      targetMouse.y = e.clientY;
+    });
+    
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    // We only want ~12 lines to keep it minimal and low CPU overhead
+    const lines = 12;
+    let time = 0;
+
+    function render() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, width, height);
+      
+      // Interpolate mouse for smooth movement
+      mouse.x += (targetMouse.x - mouse.x) * 0.05;
+      mouse.y += (targetMouse.y - mouse.y) * 0.05;
+
+      // Extract current CSS rule color (will adapt to light/dark mode if refreshed)
+      const rootStyle = getComputedStyle(document.documentElement);
+      const strokeColor = rootStyle.getPropertyValue('--rule').trim() || 'rgba(128,128,128,0.1)';
+      
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 1;
+      
+      for (let i = 0; i < lines; i++) {
+        ctx.beginPath();
+        for (let x = 0; x < width + 50; x += 40) {
+           // Generative topographic noise
+           const noise = Math.sin(x * 0.003 + time) * 40 
+                       + Math.sin(x * 0.008 - time * 0.7) * 20;
+           
+           const yBase = (height / lines) * i;
+           
+           // Interactive displacement near cursor
+           const dx = mouse.x - x;
+           const dy = mouse.y - yBase;
+           const dist = Math.sqrt(dx*dx + dy*dy);
+           const displacement = Math.max(0, 200 - dist) * 0.15;
+           
+           const y = yBase + noise + (dy > 0 ? -displacement : displacement);
+           
+           if (x === 0) ctx.moveTo(x, y);
+           else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      
+      time += 0.002;
+      requestAnimationFrame(render);
+    }
+    
+    render();
+  }
+</script>

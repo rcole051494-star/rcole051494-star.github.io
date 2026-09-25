@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-signal: var(--signal);
+  --color-uv: var(--uv);
+  --color-rule: var(--rule);
+
+  --font-display: 'Instrument Serif', serif;
+  --font-sans: 'Inter Tight', 'Geist', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+:root {
+  --paper: #F2EEE6;
+  --ink: #0E0E10;
+  --signal: #FF4A1C;
+  --uv: #5B3DF5;
+  --rule: rgba(14, 14, 16, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0B0B0D;
+    --ink: #ECE8DF;
+    --signal: #FF5A2C;
+    --uv: #8A7CFF;
+    --rule: rgba(236, 232, 223, 0.18);
+  }
+}
+
+html.dark {
+  --paper: #0B0B0D;
+  --ink: #ECE8DF;
+  --signal: #FF5A2C;
+  --uv: #8A7CFF;
+  --rule: rgba(236, 232, 223, 0.18);
+}
+
+html.light {
+  --paper: #F2EEE6;
+  --ink: #0E0E10;
+  --signal: #FF4A1C;
+  --uv: #5B3DF5;
+  --rule: rgba(14, 14, 16, 0.18);
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+code, pre, .font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Recruiter Mode Visibility Utilities */
+html[data-mode="recruiter"] .engineer-only {
+  display: none !important;
+}
+
+html[data-mode="engineer"] .recruiter-only {
+  display: none !important;
+}
+
+/* Markdown overrides for case files */
+.case-file-content h2, .case-file-content h3 {
+  font-family: var(--font-display);
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+}
+.case-file-content h2 { font-size: 2.5rem; }
+.case-file-content h3 { font-size: 1.75rem; color: var(--signal); }
+.case-file-content p { line-height: 1.8; color: var(--ink); opacity: 0.9; margin-bottom: 1.5rem; }
+.case-file-content ul { list-style-type: square; padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.case-file-content li { margin-bottom: 0.5rem; }
+.case-file-content strong { color: var(--ink); font-weight: 600; }

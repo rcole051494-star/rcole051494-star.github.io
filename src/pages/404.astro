@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="404 - Dropped Packet">
+  <div class="min-h-[80vh] flex flex-col justify-center items-center text-center px-4">
+    <h1 class="font-mono text-[6rem] md:text-[10rem] leading-none text-[var(--signal)] mb-4 animate-pulse select-none">
+      404
+    </h1>
+    <div class="font-mono text-sm md:text-xl mb-12 border border-[var(--rule)] bg-[var(--ink)]/5 px-8 py-6 shadow-sm">
+      <span class="text-[var(--ink)] font-bold">ICMP Type 11: Time Exceeded</span><br/>
+      <span class="text-[var(--ink)]/60 mt-2 block">TTL expired in transit. Packet dropped at edge.</span>
+    </div>
+    <a href="/" class="font-mono text-[10px] md:text-xs tracking-widest uppercase border border-[var(--ink)] px-6 py-3 hover:bg-[var(--ink)] hover:text-[var(--paper)] transition-colors">
+      INITIATE NEW HANDSHAKE (HOME)
+    </a>
+  </div>
+</Layout>

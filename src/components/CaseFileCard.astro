@@ -1,0 +1,28 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  caseFile: CollectionEntry<'case-files'>;
+}
+
+const { caseFile } = Astro.props;
+const { id, title, summary, attack_techniques } = caseFile.data;
+---
+<a href={`/writeups/${caseFile.id}`} class="block p-8 border border-[var(--rule)] bg-[var(--paper)] hover:border-[var(--signal)] transition-colors group relative shadow-sm hover:shadow-md h-full flex flex-col focus-visible:outline-2 focus-visible:outline-[var(--signal)] focus-visible:outline-offset-4">
+  <div class="absolute top-0 right-0 bg-[var(--ink)] text-[var(--paper)] font-mono text-[9px] px-2 py-1 select-none">
+    {id}
+  </div>
+  <h3 class="font-display text-2xl mb-4 group-hover:text-[var(--signal)] transition-colors pr-8">
+    {title}
+  </h3>
+  <div class="flex flex-wrap gap-2 mb-6">
+    {attack_techniques.map((tech: string) => (
+      <span class="font-mono text-[10px] bg-[var(--ink)]/5 border border-[var(--rule)] px-2 py-1 text-[var(--ink)]">
+        {tech}
+      </span>
+    ))}
+  </div>
+  <p class="text-sm text-[var(--ink)]/80 mt-auto">
+    {summary}
+  </p>
+</a>

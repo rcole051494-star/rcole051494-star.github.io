@@ -1,0 +1,98 @@
+---
+// src/components/NavigationRail.astro
+const layers = [
+  { id: 'L1', name: 'Origin' },
+  { id: 'L2', name: 'Connections' },
+  { id: 'L3', name: 'Routes' },
+  { id: 'L4', name: 'Reliability' },
+  { id: 'L5', name: 'Sessions' },
+  { id: 'L6', name: 'Format' },
+  { id: 'L7', name: 'Payload' }
+];
+---
+<nav class="sticky top-12 flex flex-col justify-between h-[calc(100vh-6rem)]">
+  <div class="flex flex-col gap-8">
+    <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--ink)]/50">
+      OSI Model
+    </div>
+    
+    <div class="relative w-full">
+       <!-- The Packet -->
+       <div id="packet" class="absolute top-0 -left-4 w-20 border border-[var(--signal)] bg-[var(--paper)] text-[var(--signal)] text-[9px] font-mono leading-none p-1 z-10 hidden md:block">
+         <div class="truncate">SRC: VISITOR</div>
+         <div class="truncate border-t border-[var(--signal)]/30 mt-[2px] pt-[2px]">DST: L7_PAYLOAD</div>
+       </div>
+       
+       <!-- Layer Links -->
+       <ul class="flex flex-col gap-8 relative z-0 pl-2">
+         {layers.map((layer, index) => (
+           <li>
+             <a href={`#${layer.id}`} class="layer-link flex items-center gap-4 text-[var(--ink)]/40 hover:text-[var(--ink)] transition-colors" data-index={index}>
+               <span class="font-display text-2xl">{layer.id}</span>
+               <span class="font-mono text-xs uppercase tracking-widest hidden lg:block">{layer.name}</span>
+             </a>
+           </li>
+         ))}
+       </ul>
+    </div>
+  </div>
+  
+  <div class="pb-8">
+    <a href="#L7" class="font-mono text-[10px] uppercase tracking-widest text-[var(--ink)] hover:text-[var(--signal)] underline decoration-[var(--rule)] underline-offset-4">
+      Skip to payload (L7)
+    </a>
+  </div>
+</nav>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  
+  // Register GSAP ScrollTrigger
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Run on mount
+  document.addEventListener('DOMContentLoaded', () => {
+    const packet = document.getElementById("packet");
+    const sections = document.querySelectorAll("section[data-layer]");
+    const navItems = document.querySelectorAll(".layer-link");
+
+    // Reduced motion check
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function updatePacket(index: number) {
+      const target = navItems[index] as HTMLElement;
+      if (target && packet) {
+        // Find Y offset relative to the ul container
+        const yOffset = target.offsetTop;
+        
+        if (prefersReducedMotion) {
+          gsap.set(packet, { y: yOffset - 6 });
+        } else {
+          gsap.to(packet, { y: yOffset - 6, duration: 0.6, ease: "power3.out", overwrite: true });
+        }
+        
+        // Update styling
+        navItems.forEach(n => {
+          n.classList.remove("text-[var(--signal)]", "font-bold");
+          n.classList.add("text-[var(--ink)]/40");
+        });
+        target.classList.add("text-[var(--signal)]", "font-bold");
+        target.classList.remove("text-[var(--ink)]/40");
+      }
+    }
+
+    sections.forEach((sec, i) => {
+      ScrollTrigger.create({
+        trigger: sec,
+        start: "top center",
+        end: "bottom center",
+        onEnter: () => updatePacket(i),
+        onEnterBack: () => updatePacket(i)
+      });
+    });
+
+    // Initialize first state
+    if (sections.length > 0) updatePacket(0);
+  });
+</script>

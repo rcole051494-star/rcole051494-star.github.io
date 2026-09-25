@@ -1,0 +1,5 @@
+Accessibility Audit Summary:
+Index Page Violations: 2
+Hardening Page Violations: 3
+
+(Full details saved in a11y-*-violations.json)

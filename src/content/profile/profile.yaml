@@ -1,0 +1,17 @@
+name: "Reagan Cole"
+headline: "{{ONE_LINE_POSITIONING}}"
+target_roles: 
+  - "{{ROLE_1}}"
+  - "{{ROLE_2}}"
+location: "{{CITY_OR_REMOTE}}"
+availability: "{{AVAILABILITY}}"
+bio_short: "{{BIO_SHORT}}"
+origin_story: "{{ORIGIN_STORY}}"
+links:
+  github: "https://github.com/placeholder"
+  linkedin: "https://linkedin.com/in/placeholder"
+  labs: "https://tryhackme.com/p/placeholder"
+resume:
+  file: "/resume/resume.pdf"
+  sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  signature: "/resume/resume.pdf.minisig"

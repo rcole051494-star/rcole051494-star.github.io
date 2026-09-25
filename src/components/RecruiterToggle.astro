@@ -1,0 +1,52 @@
+---
+// src/components/RecruiterToggle.astro
+---
+<div class="fixed top-6 right-6 z-50 flex items-center gap-3 bg-[var(--paper)]/80 backdrop-blur-md px-3 py-2 border border-[var(--rule)]">
+  <label for="recruiter-mode-toggle" class="font-mono text-xs uppercase tracking-widest text-[var(--ink)] cursor-pointer select-none">
+    Recruiter Mode
+  </label>
+  <button
+    id="recruiter-mode-toggle"
+    role="switch"
+    aria-checked="false"
+    class="w-10 h-5 rounded-none border border-[var(--ink)] bg-[var(--paper)] relative transition-colors focus-visible:outline-2 focus-visible:outline-[var(--signal)]"
+  >
+    <span class="absolute left-0 top-0 bottom-0 w-5 bg-[var(--ink)] transition-transform duration-300 ease-in-out"></span>
+  </button>
+</div>
+
+<script is:inline>
+  const toggle = document.getElementById('recruiter-mode-toggle');
+  const root = document.documentElement;
+
+  // Sync initial state visually
+  const isRecruiter = root.dataset.mode === 'recruiter';
+  if (isRecruiter) {
+    toggle.setAttribute('aria-checked', 'true');
+    const thumb = toggle.querySelector('span');
+    thumb.style.transform = 'translateX(100%)';
+    thumb.style.backgroundColor = 'var(--signal)';
+  }
+
+  toggle.addEventListener('click', () => {
+    const currentlyRecruiter = root.dataset.mode === 'recruiter';
+    const thumb = toggle.querySelector('span');
+    
+    if (currentlyRecruiter) {
+      root.dataset.mode = 'engineer';
+      localStorage.setItem('recruiterMode', 'false');
+      toggle.setAttribute('aria-checked', 'false');
+      thumb.style.transform = 'translateX(0)';
+      thumb.style.backgroundColor = 'var(--ink)';
+      // Trigger resize for GSAP if needed
+      window.dispatchEvent(new Event('resize'));
+    } else {
+      root.dataset.mode = 'recruiter';
+      localStorage.setItem('recruiterMode', 'true');
+      toggle.setAttribute('aria-checked', 'true');
+      thumb.style.transform = 'translateX(100%)';
+      thumb.style.backgroundColor = 'var(--signal)';
+      window.dispatchEvent(new Event('resize'));
+    }
+  });
+</script>

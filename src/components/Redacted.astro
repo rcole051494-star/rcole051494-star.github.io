@@ -1,0 +1,19 @@
+---
+// src/components/Redacted.astro
+interface Props {
+  text: string;
+  className?: string;
+}
+
+const { text, className = "" } = Astro.props;
+---
+<span class={`relative inline-block group cursor-text ${className}`}>
+  <!-- Accessible text always available to screen readers -->
+  <span class="sr-only">{text}</span>
+  
+  <!-- Visual text layer -->
+  <span class="relative z-10" aria-hidden="true">{text}</span>
+  
+  <!-- Redaction bar that scales away on hover/scroll -->
+  <span class="absolute inset-0 bg-[var(--ink)] z-20 origin-left transition-transform duration-[600ms] ease-[cubic-bezier(0.85,0,0.15,1)] group-hover:scale-x-0 pointer-events-none" aria-hidden="true"></span>
+</span>

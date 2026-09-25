@@ -1,0 +1,34 @@
+---
+---
+<div id="xray-overlay" class="fixed inset-0 pointer-events-none z-[100] hidden">
+  <div class="w-full h-full border-[var(--signal)]/30 border-[4px] border-dashed"></div>
+  <div class="absolute bottom-6 right-6 bg-[var(--signal)] text-[var(--paper)] font-mono text-[10px] px-3 py-2 shadow-lg shadow-[var(--signal)]/20 pointer-events-auto">
+    X-RAY MODE ACTIVE [Press X to disable]
+  </div>
+</div>
+
+<script is:inline>
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    if (e.key.toLowerCase() === 'x') {
+      document.documentElement.classList.toggle('xray-active');
+      const overlay = document.getElementById('xray-overlay');
+      if (overlay) {
+        overlay.classList.toggle('hidden');
+      }
+    }
+  });
+</script>
+<style is:global>
+  html.xray-active body * {
+    outline: 1px dashed rgba(255, 90, 44, 0.25) !important;
+  }
+  html.xray-active .xray-note {
+    display: block !important;
+    opacity: 1 !important;
+  }
+  .xray-note {
+    display: none !important;
+  }
+</style>

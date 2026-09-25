@@ -1,17 +1,200 @@
 ---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Redacted from '../components/Redacted.astro';
+import CaseFileCard from '../components/CaseFileCard.astro';
+import SkillGraph from '../components/SkillGraph.tsx';
+import TriageDesk from '../components/TriageDesk.tsx';
+import ResumeVerifier from '../components/ResumeVerifier.tsx';
 
+const caseFiles = await getCollection('case-files');
+const profileEntries = await getCollection('profile');
+const profile = profileEntries[0]?.data;
+const expectedHash = profile?.resume?.sha256 || 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+
+// Compute Graph Data
+const nodes: { id: string; group: 'skill' | 'tool' | 'framework' | 'case' }[] = [];
+const links: { source: string; target: string }[] = [];
+const addedNodes = new Set<string>();
+
+caseFiles.forEach(file => {
+  const caseId = file.data.id;
+  nodes.push({ id: caseId, group: 'case' });
+  addedNodes.add(caseId);
+
+  const extractLinks = (items: string[], group: 'skill' | 'tool' | 'framework') => {
+    items.forEach(item => {
+      if (!addedNodes.has(item)) {
+        nodes.push({ id: item, group });
+        addedNodes.add(item);
+      }
+      links.push({ source: caseId, target: item });
+    });
+  };
+
+  extractLinks(file.data.skills || [], 'skill');
+  extractLinks(file.data.tools || [], 'tool');
+  extractLinks(file.data.frameworks || [], 'framework');
+});
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title={"{{FULL_NAME}} - Portfolio"}>
+  
+  <section data-layer="L1" id="L1" class="min-h-screen py-24 flex flex-col justify-center relative border-b border-[var(--rule)]">
+    <div class="absolute hidden lg:block -left-12 top-24 font-mono text-[10px] rotate-180 tracking-widest text-[var(--ink)]/40" style="writing-mode: vertical-rl">
+      EXH-00 :: ORIGIN
+    </div>
+
+    <h1 class="font-display text-5xl md:text-[6vw] leading-[0.95] tracking-tight mb-12 max-w-5xl">
+      I am a methodical security analyst ready to bring rigorous 
+      <Redacted text="threat hunting" /> and 
+      <Redacted text="process reliability" /> to a Security Operations Center.
+      <br/><span class="text-[var(--signal)] italic">Decapsulate my work.</span>
+    </h1>
+    
+    <p class="font-sans text-lg md:text-xl text-[var(--ink)]/80 max-w-2xl leading-relaxed">
+      Every network packet arrives wrapped in layers. To read the payload, you strip them one at a time. The visitor is the receiver. The portfolio is the packet. Scroll to begin decapsulation.
+    </p>
+  </section>
+
+  <section data-layer="L2" id="L2" class="min-h-[70vh] py-24 relative border-b border-[var(--rule)]">
+    <h2 class="font-mono text-sm text-[var(--signal)] mb-8 tracking-widest uppercase">L2 / Connections</h2>
+    <div class="font-display text-4xl mb-6">Community & Cohort</div>
+    <p class="max-w-xl text-[var(--ink)]/70 mb-12">Connections to peers, mentors, and the broader security community. Documenting events, groups, and cohort collaboration.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl">
+      <!-- Node 1: Cohort -->
+      <div class="border border-[var(--rule)] p-6 bg-[var(--paper)] hover:border-[var(--signal)] transition-colors group">
+        <div class="font-mono text-[10px] text-[var(--ink)]/40 mb-4 border-b border-[var(--rule)] pb-2 flex justify-between">
+          <span>NODE::COHORT</span>
+          <span class="group-hover:text-[var(--signal)] transition-colors">LINK_UP</span>
+        </div>
+        <h3 class="font-display text-2xl mb-2">{"{{TRAINING_PROGRAM_NAME}}"}</h3>
+        <p class="text-sm text-[var(--ink)]/80 mb-4">{"{{COHORT_EXPERIENCE_SUMMARY_E.G_TEAM_LABS_PEER_REVIEW}}"}</p>
+        <div class="font-mono text-[10px] bg-[var(--ink)]/5 inline-block px-2 py-1">{"{{KEY_COLLABORATION_SKILL}}"}</div>
+      </div>
+
+      <!-- Node 2: Memberships -->
+      <div class="border border-[var(--rule)] p-6 bg-[var(--paper)] hover:border-[var(--signal)] transition-colors group">
+        <div class="font-mono text-[10px] text-[var(--ink)]/40 mb-4 border-b border-[var(--rule)] pb-2 flex justify-between">
+          <span>NODE::ORG</span>
+          <span class="group-hover:text-[var(--signal)] transition-colors">LINK_UP</span>
+        </div>
+        <h3 class="font-display text-2xl mb-2">{"{{PROFESSIONAL_ORG_NAME}}"}</h3>
+        <p class="text-sm text-[var(--ink)]/80 mb-4">{"{{INVOLVEMENT_OR_MEMBERSHIP_DETAILS}}"}</p>
+        <div class="font-mono text-[10px] bg-[var(--ink)]/5 inline-block px-2 py-1">{"{{ORG_ROLE_OR_STATUS}}"}</div>
+      </div>
+
+      <!-- Node 3: Events -->
+      <div class="border border-[var(--rule)] p-6 bg-[var(--paper)] hover:border-[var(--signal)] transition-colors group">
+        <div class="font-mono text-[10px] text-[var(--ink)]/40 mb-4 border-b border-[var(--rule)] pb-2 flex justify-between">
+          <span>NODE::EVENT</span>
+          <span class="group-hover:text-[var(--signal)] transition-colors">LINK_UP</span>
+        </div>
+        <h3 class="font-display text-2xl mb-2">{"{{CONFERENCE_OR_WEBINAR_NAME}}"}</h3>
+        <p class="text-sm text-[var(--ink)]/80 mb-4">{"{{KEY_TAKEAWAY_OR_TOPIC}}"}</p>
+        <div class="font-mono text-[10px] bg-[var(--ink)]/5 inline-block px-2 py-1">{"{{EVENT_DATE_OR_YEAR}}"}</div>
+      </div>
+
+      <!-- Node 4: Communities -->
+      <div class="border border-[var(--rule)] p-6 bg-[var(--paper)] hover:border-[var(--signal)] transition-colors group">
+        <div class="font-mono text-[10px] text-[var(--ink)]/40 mb-4 border-b border-[var(--rule)] pb-2 flex justify-between">
+          <span>NODE::COMMUNITY</span>
+          <span class="group-hover:text-[var(--signal)] transition-colors">LINK_UP</span>
+        </div>
+        <h3 class="font-display text-2xl mb-2">{"{{DISCORD_OR_FORUM_NAME}}"}</h3>
+        <p class="text-sm text-[var(--ink)]/80 mb-4">{"{{COMMUNITY_ACTIVITY_OR_MENTORSHIP}}"}</p>
+        <div class="font-mono text-[10px] bg-[var(--ink)]/5 inline-block px-2 py-1">{"{{PLATFORM_NAME}}"}</div>
+      </div>
+    </div>
+  </section>
+
+  <section data-layer="L3" id="L3" class="min-h-[70vh] py-24 relative border-b border-[var(--rule)]">
+    <h2 class="font-mono text-sm text-[var(--signal)] mb-8 tracking-widest uppercase">L3 / Routes</h2>
+    <div class="font-display text-4xl mb-6">Career Timeline</div>
+    <p class="max-w-xl text-[var(--ink)]/70 mb-16">Where I've been and the routing table to where I am going. Emphasizing documentation, compliance, and high-stakes problem solving.</p>
+
+    <div class="relative border-l border-[var(--rule)] ml-4 space-y-16 pb-8">
+      
+      <!-- Route 1 -->
+      <div class="relative pl-8 group">
+        <div class="absolute w-3 h-3 bg-[var(--paper)] border border-[var(--signal)] -left-[6.5px] top-1.5 group-hover:bg-[var(--signal)] transition-colors"></div>
+        <div class="font-mono text-[10px] text-[var(--signal)] mb-2 tracking-widest uppercase">Jan 2026 — Present</div>
+        <h3 class="font-display text-3xl mb-1">Local Tax Expert (FS3 Status)</h3>
+        <div class="font-mono text-xs text-[var(--ink)]/60 mb-6 uppercase tracking-widest">Intuit TurboTax</div>
+        <ul class="list-none space-y-3 text-sm text-[var(--ink)]/80 max-w-2xl">
+          <li class="pl-4 relative before:content-['>'] before:absolute before:left-0 before:text-[var(--signal)] before:font-mono">Serve as first point of contact for a high volume of client inquiries, verifying account and eligibility details and resolving issues under strict deadlines and federal regulatory requirements.</li>
+          <li class="pl-4 relative before:content-['>'] before:absolute before:left-0 before:text-[var(--signal)] before:font-mono">Act as an escalation point for complex client issues, coordinating with internal specialists and communicating resolutions clearly, promptly, and with empathy.</li>
+          <li class="pl-4 relative before:content-['>'] before:absolute before:left-0 before:text-[var(--signal)] before:font-mono">Maintain complete, confidential documentation for every interaction, adhering to established playbooks and compliance standards.</li>
+        </ul>
+      </div>
+
+      <!-- Route 2 -->
+      <div class="relative pl-8 group">
+        <div class="absolute w-3 h-3 bg-[var(--paper)] border border-[var(--rule)] -left-[6.5px] top-1.5 group-hover:bg-[var(--signal)] group-hover:border-[var(--signal)] transition-colors"></div>
+        <div class="font-mono text-[10px] text-[var(--ink)]/50 mb-2 tracking-widest uppercase">May 2023 — May 2025</div>
+        <h3 class="font-display text-3xl mb-1">Night Audit Manager</h3>
+        <div class="font-mono text-xs text-[var(--ink)]/60 mb-6 uppercase tracking-widest">Bellevue Hotel</div>
+        <ul class="list-none space-y-3 text-sm text-[var(--ink)]/80 max-w-2xl">
+          <li class="pl-4 relative before:content-['>'] before:absolute before:left-0 before:text-[var(--rule)] group-hover:before:text-[var(--signal)] before:font-mono transition-colors">Handled overnight inbound call volume for a 200+ room property, entering registrations and reservations into electronic systems with 100% data accuracy.</li>
+          <li class="pl-4 relative before:content-['>'] before:absolute before:left-0 before:text-[var(--rule)] group-hover:before:text-[var(--signal)] before:font-mono transition-colors">Reconciled daily transactions and audited revenue data, directly supporting billing integrity and eligibility-to-charge accuracy.</li>
+          <li class="pl-4 relative before:content-['>'] before:absolute before:left-0 before:text-[var(--rule)] group-hover:before:text-[var(--signal)] before:font-mono transition-colors">Resolved guest concerns and service requests overnight with calm, compassionate problem resolution during high-pressure situations.</li>
+        </ul>
+      </div>
+
+      <!-- Route 3 -->
+      <div class="relative pl-8 group">
+        <div class="absolute w-3 h-3 bg-[var(--paper)] border border-[var(--rule)] -left-[6.5px] top-1.5 group-hover:bg-[var(--signal)] group-hover:border-[var(--signal)] transition-colors"></div>
+        <div class="font-mono text-[10px] text-[var(--ink)]/50 mb-2 tracking-widest uppercase">Aug 2020 — Apr 2023</div>
+        <h3 class="font-display text-3xl mb-1">Lead Leasing Consultant</h3>
+        <div class="font-mono text-xs text-[var(--ink)]/60 mb-6 uppercase tracking-widest">Camden Property Trust</div>
+        <ul class="list-none space-y-3 text-sm text-[var(--ink)]/80 max-w-2xl">
+          <li class="pl-4 relative before:content-['>'] before:absolute before:left-0 before:text-[var(--rule)] group-hover:before:text-[var(--signal)] before:font-mono transition-colors">Scheduled and coordinated a continuous pipeline of client appointments and tours, managing calendars across multiple staff and achieving a 98% occupancy rate.</li>
+          <li class="pl-4 relative before:content-['>'] before:absolute before:left-0 before:text-[var(--rule)] group-hover:before:text-[var(--signal)] before:font-mono transition-colors">Verified applicant financial and identity documentation for accuracy and completeness before processing.</li>
+          <li class="pl-4 relative before:content-['>'] before:absolute before:left-0 before:text-[var(--rule)] group-hover:before:text-[var(--signal)] before:font-mono transition-colors">Coordinated with maintenance, leasing, and corporate teams to route and resolve resident issues, maintaining service quality standards.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <section data-layer="L4" id="L4" class="min-h-[70vh] py-24 relative border-b border-[var(--rule)]">
+    <h2 class="font-mono text-sm text-[var(--signal)] mb-8 tracking-widest uppercase">L4 / Reliability</h2>
+    <div class="font-display text-4xl mb-6">Documentation & Process</div>
+    <p class="max-w-xl text-[var(--ink)]/70">A showcase of ownership, clear communication, and process reliability.</p>
+  </section>
+
+  <section data-layer="L5" id="L5" class="min-h-screen py-24 relative border-b border-[var(--rule)] flex flex-col">
+    <h2 class="font-mono text-sm text-[var(--signal)] mb-8 tracking-widest uppercase">L5 / Sessions</h2>
+    <div class="font-display text-4xl mb-6">Learning Log</div>
+    <p class="max-w-xl text-[var(--ink)]/70 mb-12">A record of TryHackMe rooms, CTFs, and daily progression. Run the interactive simulation below to test your triage instincts.</p>
+    
+    <div class="mt-auto">
+      <TriageDesk client:load />
+    </div>
+  </section>
+
+  <section data-layer="L6" id="L6" class="min-h-[90vh] py-24 relative border-b border-[var(--rule)] flex flex-col">
+    <h2 class="font-mono text-sm text-[var(--signal)] mb-8 tracking-widest uppercase">L6 / Format</h2>
+    <div class="font-display text-4xl mb-12">Skills & Certifications</div>
+    
+    <div class="w-full flex-grow min-h-[500px] bg-[var(--paper)]/50 backdrop-blur border border-[var(--rule)] overflow-hidden">
+      <SkillGraph client:load nodes={nodes} links={links} />
+    </div>
+  </section>
+
+  <section data-layer="L7" id="L7" class="min-h-screen py-24 relative pb-48">
+    <h2 class="font-mono text-sm text-[var(--signal)] mb-8 tracking-widest uppercase">L7 / Payload</h2>
+    <div class="font-display text-4xl mb-12">Case Files</div>
+    
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-24">
+      {caseFiles.map(file => (
+        <CaseFileCard caseFile={file} />
+      ))}
+    </div>
+
+    <div class="font-display text-4xl mb-12">Validation</div>
+    <ResumeVerifier client:load expectedHash={expectedHash} />
+  </section>
+  
+</Layout>

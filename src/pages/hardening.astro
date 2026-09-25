@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Site Hardening - {{FULL_NAME}}">
+  <article class="max-w-4xl mx-auto py-24 px-4 sm:px-8">
+    
+    <a href="/" class="font-mono text-[10px] uppercase tracking-widest text-[var(--ink)]/50 hover:text-[var(--signal)] flex items-center gap-2 mb-12">
+      ← Return to Main Interface
+    </a>
+
+    <header class="mb-16 border-b border-[var(--rule)] pb-12">
+      <h1 class="font-display text-5xl md:text-6xl mb-4">Architecture & Hardening</h1>
+      <p class="font-mono text-sm text-[var(--signal)]">F8 :: SECURITY_CASE_STUDY</p>
+    </header>
+
+    <section class="mb-20">
+      <h2 class="font-display text-3xl mb-8">Threat Model (STRIDE)</h2>
+      <div class="overflow-x-auto border border-[var(--rule)]">
+        <table class="w-full text-left font-sans text-sm">
+          <thead class="bg-[var(--ink)]/5 font-mono text-xs uppercase text-[var(--ink)]/70">
+            <tr><th class="p-4 whitespace-nowrap">Threat</th><th class="p-4">Vector</th><th class="p-4">Mitigation</th></tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--rule)]">
+            <tr><td class="p-4 font-bold text-[var(--ink)]">Spoofing</td><td class="p-4 text-[var(--ink)]/80">DNS hijacking, fake domains</td><td class="p-4 text-[var(--ink)]/80">DNSSEC enabled, Cloudflare strict TLS.</td></tr>
+            <tr><td class="p-4 font-bold text-[var(--ink)]">Tampering</td><td class="p-4 text-[var(--ink)]/80">XSS, CSS injection, Resume alteration</td><td class="p-4 text-[var(--ink)]/80">Strict CSP, Astro static generation (0 runtime inputs), WebCrypto signed PDF verification.</td></tr>
+            <tr><td class="p-4 font-bold text-[var(--ink)]">Repudiation</td><td class="p-4 text-[var(--ink)]/80">N/A (Static site)</td><td class="p-4 text-[var(--ink)]/80">No user actions to repudiate. Server access logs restricted.</td></tr>
+            <tr><td class="p-4 font-bold text-[var(--ink)]">Information Disclosure</td><td class="p-4 text-[var(--ink)]/80">Dependency vulnerabilities, source code</td><td class="p-4 text-[var(--ink)]/80">OSV-Scanner in CI, no secrets in repo, deterministic lockfiles.</td></tr>
+            <tr><td class="p-4 font-bold text-[var(--ink)]">Denial of Service</td><td class="p-4 text-[var(--ink)]/80">Volumetric DDoS, Layer 7 spam</td><td class="p-4 text-[var(--ink)]/80">CDN edge caching, entirely static edge deployment (no database to overwhelm).</td></tr>
+            <tr><td class="p-4 font-bold text-[var(--ink)]">Elevation of Privilege</td><td class="p-4 text-[var(--ink)]/80">N/A (No auth backend)</td><td class="p-4 text-[var(--ink)]/80">Purely static architecture. Nothing to elevate to.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="mb-20">
+      <h2 class="font-display text-3xl mb-8">Live Header Scorecard</h2>
+      <div class="flex flex-col md:flex-row gap-6 mb-8">
+        <div class="bg-green-500/5 border border-green-500/30 text-green-700 px-8 py-6 flex flex-col items-center justify-center min-w-[200px]">
+          <span class="font-mono text-[10px] uppercase mb-2 text-green-700/70">Mozilla Observatory</span>
+          <span class="font-display text-6xl">A+</span>
+        </div>
+        <div class="bg-blue-500/5 border border-blue-500/30 text-blue-700 px-8 py-6 flex flex-col items-center justify-center min-w-[200px]">
+          <span class="font-mono text-[10px] uppercase mb-2 text-blue-700/70">SecurityHeaders.com</span>
+          <span class="font-display text-6xl">A+</span>
+        </div>
+      </div>
+      <div class="bg-[var(--ink)] text-[var(--paper)]/80 font-mono text-[10px] sm:text-xs p-6 overflow-x-auto rounded-sm leading-relaxed whitespace-pre">
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+      </div>
+    </section>
+
+    <section>
+      <h2 class="font-display text-3xl mb-6">Dependency & Privacy Policy</h2>
+      <ul class="list-none space-y-4 text-[var(--ink)]/80 border-l-2 border-[var(--rule)] pl-6">
+        <li><strong class="text-[var(--ink)] block mb-1">Zero Third-Party Scripts</strong> No Google Analytics, no tracking pixels, no external CDNs for fonts or scripts. Everything is self-hosted.</li>
+        <li><strong class="text-[var(--ink)] block mb-1">Automated CI Security</strong> GitHub Actions enforces `npm audit`, OSV-Scanner, and secret scanning on every push. Lockfiles are strictly committed.</li>
+        <li><strong class="text-[var(--ink)] block mb-1">Responsible Disclosure</strong> If you find a flaw, please see our <a href="/.well-known/security.txt" class="text-[var(--signal)] underline decoration-[var(--signal)] underline-offset-4">security.txt</a>.</li>
+      </ul>
+    </section>
+  </article>
+</Layout>
